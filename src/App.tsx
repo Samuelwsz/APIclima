@@ -34,17 +34,37 @@ interface WeatherData {
 export default function App() {
   const [data, setData] = useState<WeatherData | null>(null)
   const [location, setLocation] = useState<string>("")
+  const [countryName, setCountryName] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6
-`
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6`
+  const restCountriesApiUrl = "https://restcountries.com/v3.1/alpha/"
 
-  const searchLocation = (event: KeyboardEvent<HTMLInputElement>) => {
+  const searchLocation = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      axios.get(url).then((response) => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const response = await axios.get(url)
+
         setData(response.data)
         console.log(response.data)
-      })
-      setLocation("")
+
+        // Obter o nome completo do país a partir da sigla usando o serviço Rest Countries
+        const countryResponse = await axios.get(
+          `${restCountriesApiUrl}${response.data.sys.country}`
+        )
+        setCountryName(countryResponse.data[0]?.name.common)
+      } catch (error) {
+        setError(
+          "Cidade não encontrada. Por favor, verifique o nome da cidade."
+        )
+      } finally {
+        setLoading(false)
+        setLocation("")
+      }
     }
   }
 
@@ -54,6 +74,12 @@ export default function App() {
         return clear
       case "Clouds":
         return cloud
+      case "Drizzle":
+        return drizzle
+      case "Rain":
+        return rain
+      case "Snow":
+        return snow
       // Adicione mais casos conforme necessário para outras condições meteorológicas
       default:
         return clear // Imagem padrão para condições desconhecidas
@@ -77,9 +103,14 @@ export default function App() {
             />
             <MagnifyingGlassIcon className="w-5 h-5 absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500" />
           </div>
-          <p className="text-white">
+          {/*
+             <p className="text-white">
             Weather: {data?.weather ? <>{data.weather[0].main}</> : null}
           </p>
+          */}
+          {loading && <p className="text-white text-xl">Carregando...</p>}
+          {error && <p className="text-red-500 text-xl mt-2">{error}</p>}
+
           <img
             src={getWeatherImage(
               data?.weather ? data.weather[0].main : undefined
@@ -87,7 +118,7 @@ export default function App() {
             alt=""
             className="flex m-auto"
           />
-          <img src={clear} alt="" className="flex m-auto" />
+
           <p className="text-white text-4xl">
             Temperature:{" "}
             {data?.main ? (
@@ -98,9 +129,7 @@ export default function App() {
             ) : null}
           </p>
           <p className="text-white my-5 text-4xl">City: {data?.name}</p>
-          <p className="text-white my-5 text-4xl">
-            Country: {data?.sys ? <>{data.sys.country}</> : null}
-          </p>
+          <p className="text-white my-5 text-4xl">Country: {countryName}</p>
           <div className="flex flex-col justify-center items-center sm:flex-row sm:justify-between px-4 py-4 md:px-10 md:py-6 lg:px-20 lg:py-10 ">
             {/* Bloco 1 */}
             <div className="flex items-center gap-3">
