@@ -11,25 +11,7 @@ import wind from "./assets/wind.png"
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { KeyboardEvent, useState } from "react"
 import axios from "axios"
-
-interface WeatherData {
-  main: {
-    temp: number
-    humidity: number
-  }
-  weather: [
-    {
-      main: string
-    }
-  ]
-  wind: {
-    speed: number
-  }
-  sys: {
-    country: string
-  }
-  name: string
-}
+import { WeatherData } from "./Interfaces/IWeatherData"
 
 export default function App() {
   const [data, setData] = useState<WeatherData | null>(null)
@@ -58,9 +40,9 @@ export default function App() {
         )
         setCountryName(countryResponse.data[0]?.name.common)
       } catch (error) {
-        setError(
-          "Cidade não encontrada. Por favor, verifique o nome da cidade."
-        )
+        setError("City not found. Please check the city name.")
+        setData(null)
+        setCountryName(null)
       } finally {
         setLoading(false)
         setLocation("")
@@ -90,7 +72,7 @@ export default function App() {
     <>
       <div className="flex justify-center items-start min-h-screen pt-16">
         {/* 'pt-16' adiciona um preenchimento superior de tamanho 16 (pode ser ajustado) */}
-        <div className="bg-blue-800 p-4 rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-lg sm:w-2/3 md:w-2/3 lg:w-2/3 text-center relative shadow-md">
+        <div className="custom-opacity-bg p-4 rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-lg sm:w-2/3 md:w-2/3 lg:w-2/3 text-center relative shadow-md">
           {/* Conteúdo da caixa */}
           <div className="relative">
             <input
@@ -99,7 +81,7 @@ export default function App() {
               value={location}
               onChange={(event) => setLocation(event.target.value)}
               onKeyDown={searchLocation}
-              className="w-full p-2 rounded-2xl border-2 border-gray-300 focus:outline-none outline-none"
+              className="w-full p-2 rounded-2xl border-2 border-gray-300 focus:outline-none outline-none text-xl"
             />
             <MagnifyingGlassIcon className="w-5 h-5 absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500" />
           </div>
@@ -108,8 +90,12 @@ export default function App() {
             Weather: {data?.weather ? <>{data.weather[0].main}</> : null}
           </p>
           */}
-          {loading && <p className="text-white text-xl">Carregando...</p>}
-          {error && <p className="text-red-500 text-xl mt-2">{error}</p>}
+          {loading && <p className="text-white text-xl">Loading...</p>}
+          {error && (
+            <p className="text-red-500 font-semibold text-xl mt-2">
+              {error}
+            </p>
+          )}
 
           <img
             src={getWeatherImage(

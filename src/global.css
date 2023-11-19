@@ -2,6 +2,11 @@
 @tailwind utilities;
 @tailwind components;
 
-body{
-  @apply bg-gray-300
+body {
+  @apply bg-cover bg-center bg-no-repeat;
+  background-image: url("./assets/bannerWeather.jpg");
+}
+
+.custom-opacity-bg {
+  @apply bg-blue-800 bg-opacity-40;
 }
