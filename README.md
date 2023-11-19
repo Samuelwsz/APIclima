@@ -2,6 +2,7 @@
 
 ### [Link do projeto](https://api-clima-hazel.vercel.app/)
 
+```
 const searchLocation = async (event: KeyboardEvent<HTMLInputElement>) => {
 if (event.key === "Enter") {
 setLoading(true)
@@ -29,7 +30,9 @@ setError(null)
     }
 
 }
+```
 
+```
 const [data, setData] = useState<WeatherData | null>(null)
 const [location, setLocation] = useState<string>("")
 const [countryName, setCountryName] = useState<string | null>(null)
@@ -37,7 +40,6 @@ const [loading, setLoading] = useState<boolean>(false)
 const [error, setError] = useState<string | null>(null)
 const [searchTrigger, setSearchTrigger] = useState<boolean>(false)
 
-/\*
 const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6`
 const restCountriesApiUrl = "https://restcountries.com/v3.1/alpha/"
 
@@ -78,7 +80,8 @@ useEffect(() => {
 }, [searchTrigger, location]) // As dependências `[searchTrigger, location]` significam que o efeito será reexecutado quando qualquer uma delas for alterada
 
 const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-if (event.key === "Enter") {
-setSearchTrigger(true) // Ativar o gatilho de pesquisa
+  if (event.key === "Enter") {
+    setSearchTrigger(true) // Ativar o gatilho de pesquisa
+  }
 }
-}\*/
+```
