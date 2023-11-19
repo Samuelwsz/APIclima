@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState, KeyboardEvent, SetStateAction } from "react"
-import { WeatherData } from "../Interfaces/IWeatherData"
+//import { WeatherData } from "../Interfaces/IWeatherData"
 
 const restCountriesApiUrl = axios.create({
   baseURL: "https://restcountries.com/v3.1/alpha/",
@@ -15,7 +15,7 @@ const openWeatherMapApiUrl = axios.create({
   baseURL: `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6`,
 })*/
 
-export default function useSearchAPI<T = unknown>() {
+export default function useSearchAPI<WeatherData>() {
   const [data, setData] = useState<WeatherData | null>(null)
   const [location, setLocation] = useState<string>("")
   const [countryName, setCountryName] = useState<string | null>(null)
