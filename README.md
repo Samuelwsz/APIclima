@@ -1,3 +1,7 @@
+### Estudo api de clima [opemWeather](https://openweathermap.org/)
+
+### [Link do projeto](https://api-clima-hazel.vercel.app/)
+
 const searchLocation = async (event: KeyboardEvent<HTMLInputElement>) => {
 if (event.key === "Enter") {
 setLoading(true)
