@@ -9,8 +9,57 @@ import snow from "./assets/snow.png"
 import wind from "./assets/wind.png"
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { KeyboardEvent, useState } from "react"
+import axios from "axios"
 
-function App() {
+interface WeatherData {
+  main: {
+    temp: number
+    humidity: number
+  }
+  weather: [
+    {
+      main: string
+    }
+  ]
+  wind: {
+    speed: number
+  }
+  sys: {
+    country: string
+  }
+  name: string
+}
+
+export default function App() {
+  const [data, setData] = useState<WeatherData | null>(null)
+  const [location, setLocation] = useState<string>("")
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6
+`
+
+  const searchLocation = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      axios.get(url).then((response) => {
+        setData(response.data)
+        console.log(response.data)
+      })
+      setLocation("")
+    }
+  }
+
+  const getWeatherImage = (weatherCondition: string | undefined) => {
+    switch (weatherCondition) {
+      case "Clear":
+        return clear
+      case "Clouds":
+        return cloud
+      // Adicione mais casos conforme necessário para outras condições meteorológicas
+      default:
+        return clear // Imagem padrão para condições desconhecidas
+    }
+  }
+
   return (
     <>
       <div className="flex justify-center items-start min-h-screen pt-16">
@@ -21,29 +70,55 @@ function App() {
             <input
               type="text"
               placeholder="Search"
+              value={location}
+              onChange={(event) => setLocation(event.target.value)}
+              onKeyDown={searchLocation}
               className="w-full p-2 rounded-2xl border-2 border-gray-300 focus:outline-none outline-none"
             />
             <MagnifyingGlassIcon className="w-5 h-5 absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500" />
           </div>
+          <p className="text-white">
+            Weather: {data?.weather ? <>{data.weather[0].main}</> : null}
+          </p>
+          <img
+            src={getWeatherImage(
+              data?.weather ? data.weather[0].main : undefined
+            )}
+            alt=""
+            className="flex m-auto"
+          />
           <img src={clear} alt="" className="flex m-auto" />
-          <p className="text-white font-semibold text-8xl">24ºc</p>
-          <p className="text-white my-5 text-4xl">London</p>
-
-          <div className="flex flex-col justify-center items-center sm:flex-row sm:justify-between px-4 py-4 md:px-10 md:py-6 lg:px-20 lg:py-10">
+          <p className="text-white text-4xl">
+            Temperature:{" "}
+            {data?.main ? (
+              <>
+                {/* converte para graus celsius */}
+                {Math.round(data.main.temp - 273.15)}°c
+              </>
+            ) : null}
+          </p>
+          <p className="text-white my-5 text-4xl">City: {data?.name}</p>
+          <p className="text-white my-5 text-4xl">
+            Country: {data?.sys ? <>{data.sys.country}</> : null}
+          </p>
+          <div className="flex flex-col justify-center items-center sm:flex-row sm:justify-between px-4 py-4 md:px-10 md:py-6 lg:px-20 lg:py-10 ">
             {/* Bloco 1 */}
-            <div className="flex flex-col items-center sm:items-start gap-3">
+            <div className="flex items-center gap-3">
               <img src={humidity} alt="" />
               <div className="text-white text-center sm:text-left text-xl">
-                <p>64%</p>
-                <p className="mb-2">Humidity</p>
+                {data?.main ? <p>{data.main.humidity} %</p> : null}
+                <p>Humidity</p>
               </div>
             </div>
 
             {/* Bloco 2 */}
-            <div className="flex flex-col items-center sm:items-start gap-3">
+            <div className="flex items-center gap-3">
               <img src={wind} alt="" />
               <div className="text-white text-center sm:text-left text-xl">
-                <p>10 km/h</p>
+                {/* converte de milhas para km */}
+                {data?.wind ? (
+                  <p>{Math.round(data.wind.speed * 1.60934)} km/h</p>
+                ) : null}
                 <p>Wind Speed</p>
               </div>
             </div>
@@ -54,5 +129,3 @@ function App() {
     </>
   )
 }
-
-export default App
