@@ -9,46 +9,19 @@ import snow from "./assets/snow.png"
 import wind from "./assets/wind.png"
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
-import { KeyboardEvent, useState } from "react"
-import axios from "axios"
 import { WeatherData } from "./Interfaces/IWeatherData"
+import useSearchAPI from "./hooks/useSearchAPI"
 
 export default function App() {
-  const [data, setData] = useState<WeatherData | null>(null)
-  const [location, setLocation] = useState<string>("")
-  const [countryName, setCountryName] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=0e4ba8942e36e6085c2a1a3f1406d6c6`
-  const restCountriesApiUrl = "https://restcountries.com/v3.1/alpha/"
-
-  const searchLocation = async (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const response = await axios.get(url)
-
-        setData(response.data)
-        console.log(response.data)
-
-        // Obter o nome completo do país a partir da sigla usando o serviço Rest Countries
-        const countryResponse = await axios.get(
-          `${restCountriesApiUrl}${response.data.sys.country}`
-        )
-        setCountryName(countryResponse.data[0]?.name.common)
-      } catch (error) {
-        setError("City not found. Please check the city name.")
-        setData(null)
-        setCountryName(null)
-      } finally {
-        setLoading(false)
-        setLocation("")
-      }
-    }
-  }
+  const {
+    data,
+    error,
+    loading,
+    handleKeyDown,
+    countryName,
+    location,
+    handleSearch,
+  } = useSearchAPI<WeatherData>()
 
   const getWeatherImage = (weatherCondition: string | undefined) => {
     switch (weatherCondition) {
@@ -79,8 +52,10 @@ export default function App() {
               type="text"
               placeholder="Search"
               value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              onKeyDown={searchLocation}
+              onChange={
+                handleSearch /*(event) => setLocation(event.target.value)*/
+              }
+              onKeyDown={handleKeyDown}
               className="w-full p-2 rounded-2xl border-2 border-gray-300 focus:outline-none outline-none text-xl"
             />
             <MagnifyingGlassIcon className="w-5 h-5 absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500" />
@@ -92,9 +67,7 @@ export default function App() {
           */}
           {loading && <p className="text-white text-xl">Loading...</p>}
           {error && (
-            <p className="text-red-500 font-semibold text-xl mt-2">
-              {error}
-            </p>
+            <p className="text-red-500 font-semibold text-xl mt-2">{error}</p>
           )}
 
           <img
