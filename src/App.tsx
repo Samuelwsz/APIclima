@@ -8,9 +8,9 @@ import rain from "./assets/rain.png"
 import snow from "./assets/snow.png"
 import wind from "./assets/wind.png"
 
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { WeatherData } from "./Interfaces/IWeatherData"
 import useSearchAPI from "./hooks/useSearchAPI"
+import InputSearch from "./components/inputSearch"
 
 export default function App() {
   const {
@@ -46,20 +46,12 @@ export default function App() {
       <div className="flex justify-center items-start min-h-screen pt-16">
         {/* 'pt-16' adiciona um preenchimento superior de tamanho 16 (pode ser ajustado) */}
         <div className="custom-opacity-bg p-4 rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-lg sm:w-2/3 md:w-2/3 lg:w-2/3 text-center relative shadow-md">
-          {/* Conteúdo da caixa */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              value={location}
-              onChange={
-                handleSearch /*(event) => setLocation(event.target.value)*/
-              }
-              onKeyDown={handleKeyDown}
-              className="w-full p-2 rounded-2xl border-2 border-gray-300 focus:outline-none outline-none text-xl"
-            />
-            <MagnifyingGlassIcon className="w-5 h-5 absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500" />
-          </div>
+          {/* Conteúdo da caixa */}    
+          <InputSearch
+            value={location}
+            onChange={handleSearch}
+            onKeyDown={handleKeyDown}
+          />
           {/*
              <p className="text-white">
             Weather: {data?.weather ? <>{data.weather[0].main}</> : null}
